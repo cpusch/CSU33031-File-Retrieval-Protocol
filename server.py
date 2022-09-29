@@ -34,7 +34,7 @@ while(True):
     # Sending a reply to client
     for i,bytes in enumerate(byte_array):
         if i == (len(byte_array) - 1):
-            UDPServerSocket.sendto(bytes, address)
+            UDPServerSocket.sendto(b'---'+bytes, address)
         else: 
             UDPServerSocket.sendto(b'~~~'+bytes, address)
         

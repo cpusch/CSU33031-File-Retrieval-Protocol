@@ -22,7 +22,8 @@ while(True):
     if frame[0][:3] == b'~~~':
         frame[0] = frame[0][3:]
         msgFromServer.append(frame)
-    else:
+    elif frame[0][:3] == b'---':
+        frame[0] = frame[0][3:]
         msgFromServer.append(frame)
         break
 
