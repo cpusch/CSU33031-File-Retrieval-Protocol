@@ -6,11 +6,6 @@ localIP     = "server"
 localPort   = 50000
 bufferSize  = 1024
 
-with open('walkthrough.pdf','rb') as file:
-    file_bytes = file.read()
-
-byte_array = [file_bytes[i:i+1000] for i in range(0, len(file_bytes), 1000)]
-
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
@@ -20,7 +15,6 @@ UDPServerSocket.bind((localIP, localPort))
 print("UDP server up and listening")
 
 # Listen for incoming datagrams
-print(len(byte_array))
 while(True):
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
     message = bytesAddressPair[0]
@@ -28,7 +22,12 @@ while(True):
 
     clientMsg = "Message from Client:{}".format(message)
     clientIP  = "Client IP Address:{}".format(address)
-    
+    with open('clientMsg','rb') as file:
+        file_bytes = file.read()
+
+    byte_array = [file_bytes[i:i+1000] for i in range(0, len(file_bytes), 1000)]
+
+
     # print(clientMsg)
     print(clientIP)
 

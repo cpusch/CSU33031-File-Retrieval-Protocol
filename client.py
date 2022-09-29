@@ -1,12 +1,11 @@
 # based on https://pythontic.com/modules/socket/udp-client-server-example
 import socket
-
-msgFromClient       = "Hello"
-
+import sys
 
 
+filename = sys.argv[1]
 
-bytesToSend         = str.encode(msgFromClient)
+bytesToSend         = str.encode(filename)
 serverAddressPort   = ("server", 50000)
 bufferSize          = 1024
 
@@ -26,14 +25,6 @@ while(True):
     else:
         msgFromServer.append(frame)
         break
-    
-
-
-# for i in range(997):
-#     msgFromServer.append(UDPClientSocket.recvfrom(bufferSize))
-    
-# if msgFromServer[0][0][:3] == b'~~~':
-#     print('yes')
 
 # extracts the bytes from the tuple in the msgFromServer list
 bytesFromServer = b''
@@ -42,6 +33,6 @@ for tpl in msgFromServer:
     # print(bytesFromServer)
 
 # converts bytes that were sent back to form
-with open("test.pdf",'wb') as file:
+with open(f"test.{filename.split('.')[1]}",'wb') as file:
     file.write(bytesFromServer)
 
