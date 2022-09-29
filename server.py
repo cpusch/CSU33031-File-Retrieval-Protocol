@@ -20,9 +20,9 @@ while(True):
     message = bytesAddressPair[0]
     address = bytesAddressPair[1]
 
-    clientMsg = "Message from Client:{}".format(message)
+    clientMsg = str(message.decode())
     clientIP  = "Client IP Address:{}".format(address)
-    with open('clientMsg','rb') as file:
+    with open(clientMsg,'rb') as file:
         file_bytes = file.read()
 
     byte_array = [file_bytes[i:i+1000] for i in range(0, len(file_bytes), 1000)]
