@@ -9,21 +9,21 @@ localPort   = 60000
 bufferSize  = 1024
 
 # Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+UDPWorkerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
+UDPWorkerSocket.bind((localIP, localPort))
 
 print(f"{localIP} waiting to work")
 
 # Listen for incoming datagrams
 while(True):
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
-    address = bytesAddressPair[1]
+    bytesAddressPair = UDPWorkerSocket.recvfrom(bufferSize)
+    serverMessage = bytesAddressPair[0]
+    serverAddress = bytesAddressPair[1]
 
-    clientMsg = str(message.decode())
-    clientIP  = "Client IP Address:{}".format(address)
+    clientMsg = str(serverMessage.decode())
+    clientIP  = "Client IP Address:{}".format(serverAddress)
     with open(f'./files/{clientMsg}','rb') as file:
         file_bytes = file.read()
 
@@ -36,7 +36,7 @@ while(True):
     # Sending a reply to client
     for i,bytes in enumerate(byte_array):
         if i == (len(byte_array) - 1):
-            UDPServerSocket.sendto(b'LAS'+bytes, address)
+            UDPWorkerSocket.sendto(b'LAS'+bytes, serverAddress)
         else: 
-            UDPServerSocket.sendto(b'MOR'+bytes, address)
+            UDPWorkerSocket.sendto(b'MOR'+bytes, serverAddress)
         
