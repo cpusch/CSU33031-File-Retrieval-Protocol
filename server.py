@@ -12,7 +12,7 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
 
-print("UDP server up and listening")
+print("Server up and listening")
 
 # Listen for incoming datagrams
 while(True):
@@ -20,21 +20,32 @@ while(True):
     clientMessage = bytesAddressPair[0]
     clientAddress = bytesAddressPair[1]
     # file extension is used to forward request to appropriate worker
-    fileExtension = clientMessage.split('.')[1]
     clientMsg = str(clientMessage.decode())
+    fileExtension = clientMsg.split('.')[1]
     print("Client IP Address:{}".format(clientAddress))
     print(f"Client requested: {clientMsg}")
 
     # server forwards message to worker and is waiting on response from worker
     UDPServerSocket.sendto(clientMessage,workerIPs[f'{fileExtension}'])
+    msgFromWorker = [] 
+    # loops reading from buffer to extract recieved frames and checks header of frame to see 
+    # if there are more frames in buffer
     while(True):
         frame = list(UDPServerSocket.recvfrom(bufferSize))
         if frame[0][:3] == b'MOR':
             frame[0] = frame[0][3:]
-            UDPServerSocket.sendto(b'MOR'+frame[0], clientAddress)
+            msgFromWorker.append(frame)
         elif frame[0][:3] == b'LAS':
             frame[0] = frame[0][3:]
-            UDPServerSocket.sendto(b'LAS'+frame[0], clientAddress)
+            msgFromWorker.append(frame)
             break
+
+    print("Sending frames to client")
+    for i,msgBytes in enumerate(msgFromWorker):
+        if i == (len(msgFromWorker) - 1):
+            UDPServerSocket.sendto(b'LAS'+msgBytes[0], clientAddress)
+        else: 
+            UDPServerSocket.sendto(b'MOR'+msgBytes[0], clientAddress)
+    print("All frames Sent")
             
         
