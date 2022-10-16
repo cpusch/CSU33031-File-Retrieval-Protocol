@@ -1,6 +1,5 @@
 # based on https://pythontic.com/modules/socket/udp-client-server-example
 import socket
-import io
 
 SPLIT_SIZE = 1000
 localIP     = "server"
