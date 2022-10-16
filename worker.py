@@ -22,21 +22,19 @@ while(True):
     serverMessage = bytesAddressPair[0]
     serverAddress = bytesAddressPair[1]
 
-    clientMsg = str(serverMessage.decode())
-    clientIP  = "Client IP Address:{}".format(serverAddress)
-    with open(f'./files/{clientMsg}','rb') as file:
+    serverMsg = str(serverMessage.decode())
+    print(f"Encoding {serverMsg} to bytes")
+    with open(f'./files/{serverMsg}','rb') as file:
         file_bytes = file.read()
 
     byte_array = [file_bytes[i:i+SPLIT_SIZE] for i in range(0, len(file_bytes), SPLIT_SIZE)]
 
 
-    # print(clientMsg)
-    print(clientIP)
-
-    # Sending a reply to client
+    # Sending a reply to server
     for i,bytes in enumerate(byte_array):
         if i == (len(byte_array) - 1):
             UDPWorkerSocket.sendto(b'LAS'+bytes, serverAddress)
         else: 
             UDPWorkerSocket.sendto(b'MOR'+bytes, serverAddress)
+    print("Frames sent to server")
         
