@@ -19,10 +19,10 @@ msgFromServer = []
 # if there are more frames in buffer
 while(True):
     frame = list(UDPClientSocket.recvfrom(bufferSize))
-    if frame[0][:3] == b'~~~':
+    if frame[0][:3] == b'MOR':
         frame[0] = frame[0][3:]
         msgFromServer.append(frame)
-    elif frame[0][:3] == b'---':
+    elif frame[0][:3] == b'LAS':
         frame[0] = frame[0][3:]
         msgFromServer.append(frame)
         break
@@ -33,7 +33,7 @@ for tpl in msgFromServer:
     bytesFromServer += tpl[0]
     # print(bytesFromServer)
 
-# converts bytes that were sent back to form
+# converts bytes that were sent back to file form
 with open(f"test.{filename.split('.')[1]}",'wb') as file:
     file.write(bytesFromServer)
 

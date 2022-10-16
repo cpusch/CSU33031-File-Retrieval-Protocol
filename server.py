@@ -2,6 +2,7 @@
 import socket
 import io
 
+SPLIT_SIZE = 1000
 localIP     = "server"
 localPort   = 50000
 bufferSize  = 1024
@@ -25,7 +26,7 @@ while(True):
     with open(f'./files/{clientMsg}','rb') as file:
         file_bytes = file.read()
 
-    byte_array = [file_bytes[i:i+1000] for i in range(0, len(file_bytes), 1000)]
+    byte_array = [file_bytes[i:i+SPLIT_SIZE] for i in range(0, len(file_bytes), SPLIT_SIZE)]
 
 
     # print(clientMsg)
@@ -34,7 +35,7 @@ while(True):
     # Sending a reply to client
     for i,bytes in enumerate(byte_array):
         if i == (len(byte_array) - 1):
-            UDPServerSocket.sendto(b'---'+bytes, address)
+            UDPServerSocket.sendto(b'LAS'+bytes, address)
         else: 
-            UDPServerSocket.sendto(b'~~~'+bytes, address)
+            UDPServerSocket.sendto(b'MOR'+bytes, address)
         
