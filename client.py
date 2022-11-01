@@ -1,4 +1,3 @@
-# based on https://pythontic.com/modules/socket/udp-client-server-example
 import socket
 import sys
 

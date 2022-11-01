@@ -1,11 +1,10 @@
-# based on https://pythontic.com/modules/socket/udp-client-server-example
 import socket
-import io
 
 SPLIT_SIZE = 1000
 localIP     = "server"
 localPort   = 50000
 bufferSize  = 1024
+workerIPs = {'pdf':('workerPDF',60000),'txt':('workerTXT',60000),'png':('workerImage',60000)}
 
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -13,29 +12,40 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
 
-print("UDP server up and listening")
+print("Server up and listening")
 
 # Listen for incoming datagrams
 while(True):
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
-    address = bytesAddressPair[1]
+    clientMessage = bytesAddressPair[0]
+    clientAddress = bytesAddressPair[1]
+    # file extension is used to forward request to appropriate worker
+    clientMsg = str(clientMessage.decode())
+    fileExtension = clientMsg.split('.')[1]
+    print("Client IP Address:{}".format(clientAddress))
+    print(f"Client requested: {clientMsg}")
 
-    clientMsg = str(message.decode())
-    clientIP  = "Client IP Address:{}".format(address)
-    with open(f'./files/{clientMsg}','rb') as file:
-        file_bytes = file.read()
+    # server forwards message to worker and is waiting on response from worker
+    UDPServerSocket.sendto(clientMessage,workerIPs[f'{fileExtension}'])
+    msgFromWorker = [] 
+    # loops reading from buffer to extract recieved frames and checks header of frame to see 
+    # if there are more frames in buffer
+    while(True):
+        frame = list(UDPServerSocket.recvfrom(bufferSize))
+        if frame[0][:3] == b'MOR':
+            frame[0] = frame[0][3:]
+            msgFromWorker.append(frame)
+        elif frame[0][:3] == b'LAS':
+            frame[0] = frame[0][3:]
+            msgFromWorker.append(frame)
+            break
 
-    byte_array = [file_bytes[i:i+SPLIT_SIZE] for i in range(0, len(file_bytes), SPLIT_SIZE)]
-
-
-    # print(clientMsg)
-    print(clientIP)
-
-    # Sending a reply to client
-    for i,bytes in enumerate(byte_array):
-        if i == (len(byte_array) - 1):
-            UDPServerSocket.sendto(b'LAS'+bytes, address)
+    print("Sending frames to client")
+    for i,msgBytes in enumerate(msgFromWorker):
+        if i == (len(msgFromWorker) - 1):
+            UDPServerSocket.sendto(b'LAS'+msgBytes[0], clientAddress)
         else: 
-            UDPServerSocket.sendto(b'MOR'+bytes, address)
+            UDPServerSocket.sendto(b'MOR'+msgBytes[0], clientAddress)
+    print("All frames Sent")
+            
         
