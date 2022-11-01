@@ -1,13 +1,11 @@
 import socket
 from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
-import gnupg
 
 SPLIT_SIZE = 1000
 localIP     = "server"
 localPort   = 50000
 bufferSize  = 1024
 workerIPs = {'pdf':('workerPDF',60000),'txt':('workerTXT',60000),'png':('workerImage',60000)}
-
 
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
@@ -53,4 +51,4 @@ while(True):
                 UDPServerSocket.sendto(LAS_HEADER+msgBytes[0], clientAddress)
             else: 
                 UDPServerSocket.sendto(MOR_HEADER+msgBytes[0], clientAddress)
-        print("All frames Sent")        
+        print("All frames Sent")
