@@ -1,5 +1,6 @@
 import socket
 from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
+import gnupg
 
 SPLIT_SIZE = 1000
 localIP     = "server"
@@ -26,13 +27,14 @@ while(True):
         # file extension is used to forward request to appropriate worker
         clientMsg = str(clientMessage.decode())
         fileExtension = clientMsg.split('.')[1]
-        print("Client IP Address:{}".format(clientAddress))
-        print(f"Client requested: {clientMsg}")
-        UDPServerSocket.sendto()
+        print(f"Client IP Address:{format(clientAddress)} and Client requested: {clientMsg}")
+        # server acknowledging to client
+        UDPServerSocket.sendto(ACK_HEADER+clientMessage,clientAddress)
+
         # server forwards message to worker and is waiting on response from worker
         UDPServerSocket.sendto(clientMessage,workerIPs[f'{fileExtension}'])
         msgFromWorker = [] 
-        # loops reading from buffer to extract recieved frames and checks header of frame to see 
+        # loops reading from buffer to extract received frames and checks header of frame to see 
         # if there are more frames in buffer
         while(True):
             frame = list(UDPServerSocket.recvfrom(bufferSize))

@@ -1,6 +1,7 @@
 import socket
 import sys
-from constants import REQ_HEADER,MOR_HEADER,LAS_HEADER
+import gnupg
+from constants import ACK_HEADER, REQ_HEADER,MOR_HEADER,LAS_HEADER
 
 filename = sys.argv[1]
 
@@ -14,11 +15,13 @@ UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 # Send to server using created UDP socket
 UDPClientSocket.sendto(REQ_HEADER+bytesToSend, serverAddressPort)
 msgFromServer = [] 
-# loops reading from buffer to extract recieved frames and checks header of frame to see 
+# loops reading from buffer to extract received frames and checks header of frame to see 
 # if there are more frames in buffer
 while(True):
     frame = list(UDPClientSocket.recvfrom(bufferSize))
-    if frame[0][:3] == MOR_HEADER:
+    if frame[0][:3] == ACK_HEADER:
+        print(f'{filename} acknowledged by server')
+    elif frame[0][:3] == MOR_HEADER:
         frame[0] = frame[0][3:]
         msgFromServer.append(frame)
     elif frame[0][:3] == LAS_HEADER:
@@ -36,5 +39,5 @@ for tpl in msgFromServer:
 with open(f"test.{filename.split('.')[1]}",'wb') as file:
     file.write(bytesFromServer)
 
-print("File Recieved Successfully")
+print("File Received Successfully")
 

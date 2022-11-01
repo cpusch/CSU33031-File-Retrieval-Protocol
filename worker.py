@@ -1,6 +1,7 @@
 import socket
 import sys
 from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
+import gnupg
 
 SPLIT_SIZE = 1000
 localIP = sys.argv[1]
@@ -26,6 +27,7 @@ while(True):
     with open(f'./files/{serverMsg}','rb') as file:
         file_bytes = file.read()
 
+    # splitting file bytes into appropriate frame sizes
     byte_array = [file_bytes[i:i+SPLIT_SIZE] for i in range(0, len(file_bytes), SPLIT_SIZE)]
 
 
