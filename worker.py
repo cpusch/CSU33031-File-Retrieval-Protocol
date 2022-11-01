@@ -1,7 +1,6 @@
 import socket
 import sys
 from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
-import encryption
 
 SPLIT_SIZE = 1000
 localIP = sys.argv[1]
