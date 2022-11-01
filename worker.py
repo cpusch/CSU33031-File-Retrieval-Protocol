@@ -1,7 +1,6 @@
 import socket
 import sys
-
-
+from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
 
 SPLIT_SIZE = 1000
 localIP = sys.argv[1]
@@ -33,8 +32,8 @@ while(True):
     # Sending a reply to server
     for i,bytes in enumerate(byte_array):
         if i == (len(byte_array) - 1):
-            UDPWorkerSocket.sendto(b'LAS'+bytes, serverAddress)
+            UDPWorkerSocket.sendto(LAS_HEADER+bytes, serverAddress)
         else: 
-            UDPWorkerSocket.sendto(b'MOR'+bytes, serverAddress)
+            UDPWorkerSocket.sendto(MOR_HEADER+bytes, serverAddress)
     print("Frames sent to server")
         
