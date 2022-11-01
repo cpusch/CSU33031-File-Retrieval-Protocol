@@ -1,11 +1,19 @@
 import socket
 import sys
-import gnupg
 from constants import ACK_HEADER, REQ_HEADER,MOR_HEADER,LAS_HEADER
+ENCRYPTION = False 
+FILENAME = ""
 
-filename = sys.argv[1]
+# FILENAME = sys.argv[1]
+if len(sys.argv) == 2:
+    FILENAME = sys.argv[1]
+elif len(sys.argv) == 3 and sys.argv[2] == "-encrypt":
+    ENCRYPTION = True
+else:
+    raise Exception("No filename supplied or invalid flag")
 
-bytesToSend         = str.encode(filename)
+
+bytesToSend         = str.encode(FILENAME)
 serverAddressPort   = ("server", 50000)
 bufferSize          = 1024
 
@@ -20,7 +28,7 @@ msgFromServer = []
 while(True):
     frame = list(UDPClientSocket.recvfrom(bufferSize))
     if frame[0][:3] == ACK_HEADER:
-        print(f'{filename} acknowledged by server')
+        print(f'{FILENAME} acknowledged by server')
     elif frame[0][:3] == MOR_HEADER:
         frame[0] = frame[0][3:]
         msgFromServer.append(frame)
@@ -36,7 +44,7 @@ for tpl in msgFromServer:
     # print(bytesFromServer)
 
 # converts bytes that were sent back to file form
-with open(f"test.{filename.split('.')[1]}",'wb') as file:
+with open(f"test.{FILENAME.split('.')[1]}",'wb') as file:
     file.write(bytesFromServer)
 
 print("File Received Successfully")
