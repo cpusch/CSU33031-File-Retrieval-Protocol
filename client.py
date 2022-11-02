@@ -7,7 +7,7 @@ FILENAME = ""
 CLIENT_KEY = None
 SERVER_KEY = None
 
-# FILENAME = sys.argv[1]
+# handles the command line arguments
 if len(sys.argv) == 2:
     FILENAME = sys.argv[1]
 elif len(sys.argv) == 3 and sys.argv[2] == "-encrypt":
@@ -21,7 +21,6 @@ else:
 bytesToSend         = str.encode(FILENAME)
 serverAddress       = ("server", 50000)
 bufferSize          = 1024
-
 # Create a UDP socket at client side
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
@@ -31,9 +30,10 @@ if ENCRYPTION:
     print('Client public key sent to server')
 else:
     UDPClientSocket.sendto(REQ_HEADER+bytesToSend, serverAddress)
+
 msgFromServer = [] 
-# loops reading from buffer to extract received frames and checks header of frame to see 
-# if there are more frames in buffer
+# loops reading from buffer to extract received frames and checks header 
+# to execute appropriate action based on header
 while(True):
     frame = list(UDPClientSocket.recvfrom(bufferSize))
     if frame[0][:3] == KEY_HEADER:

@@ -2,20 +2,16 @@ import socket
 from headers import *
 from encryption import *
 
-SPLIT_SIZE = 1000
 localIP     = "server"
 localPort   = 50000
 bufferSize  = 1024
 workerIPs = {'pdf':('workerPDF',60000),'txt':('workerTXT',60000),'png':('workerImage',60000)}
 CLIENT_KEY = None
 SERVER_KEY = generate_key()
-
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
-
 print("Server up and listening")
 
 # Listen for incoming datagrams
