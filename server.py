@@ -29,7 +29,6 @@ while(True):
     clientMessage = clientMessage[3:]
     if HEADER == REQ_HEADER or HEADER == ENCRYPTED_REQ_HEADER:
         # file extension is used to forward request to appropriate worker
-        clientMsg = str(decrypt_data(clientMessage,SERVER_KEY).decode())
 
         if HEADER == ENCRYPTED_REQ_HEADER:
             ENCRYPTION = True
