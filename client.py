@@ -1,33 +1,45 @@
 import socket
 import sys
-from constants import ACK_HEADER, REQ_HEADER,MOR_HEADER,LAS_HEADER
+from headers import *
+from encryption import *
 ENCRYPTION = False 
 FILENAME = ""
+CLIENT_KEY = None
+SERVER_KEY = None
 
 # FILENAME = sys.argv[1]
 if len(sys.argv) == 2:
     FILENAME = sys.argv[1]
 elif len(sys.argv) == 3 and sys.argv[2] == "-encrypt":
+    FILENAME = sys.argv[1]
     ENCRYPTION = True
+    CLIENT_KEY = generate_key()
 else:
     raise Exception("No filename supplied or invalid flag")
 
 
 bytesToSend         = str.encode(FILENAME)
-serverAddressPort   = ("server", 50000)
+serverAddress       = ("server", 50000)
 bufferSize          = 1024
 
 # Create a UDP socket at client side
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
-# Send to server using created UDP socket
-UDPClientSocket.sendto(REQ_HEADER+bytesToSend, serverAddressPort)
+if ENCRYPTION:
+    # Send client key to server and
+    UDPClientSocket.sendto(KEY_HEADER+get_public_key(CLIENT_KEY),serverAddress)
+    print('Client public key sent to server')
+else:
+    UDPClientSocket.sendto(REQ_HEADER+bytesToSend, serverAddress)
 msgFromServer = [] 
 # loops reading from buffer to extract received frames and checks header of frame to see 
 # if there are more frames in buffer
 while(True):
     frame = list(UDPClientSocket.recvfrom(bufferSize))
-    if frame[0][:3] == ACK_HEADER:
+    if frame[0][:3] == KEY_HEADER:
+        SERVER_KEY = frame[0][3:]
+        UDPClientSocket.sendto(ENCRYPTED_REQ_HEADER+encrypt_data(bytesToSend,SERVER_KEY), serverAddress)
+    elif frame[0][:3] == ACK_HEADER:
         print(f'{FILENAME} acknowledged by server')
     elif frame[0][:3] == MOR_HEADER:
         frame[0] = frame[0][3:]
@@ -40,7 +52,10 @@ while(True):
 # extracts the bytes from the tuple in the msgFromServer list
 bytesFromServer = b''
 for tpl in msgFromServer:
-    bytesFromServer += tpl[0]
+    if ENCRYPTION:
+        bytesFromServer += decrypt_data(tpl[0],CLIENT_KEY)
+    else:
+        bytesFromServer += tpl[0]
     # print(bytesFromServer)
 
 # converts bytes that were sent back to file form
