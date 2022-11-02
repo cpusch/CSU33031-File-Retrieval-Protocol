@@ -5,4 +5,6 @@ test.txt
 part1.pcap
 test.pdf
 test.png
+.pyc
 __pycache__/constants.cpython-310.pyc
+__pycache__/encryption.cpython-310.pyc
