@@ -1,4 +1,3 @@
-from email import header
 import socket
 from headers import *
 from encryption import *
