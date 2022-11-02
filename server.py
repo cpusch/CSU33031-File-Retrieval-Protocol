@@ -61,6 +61,8 @@ while(True):
                 frame[0] = frame[0][3:]
                 msgFromWorker.append(frame)
                 break
+            else:
+                pass
 
         print("Sending frames to client")
         frameCount = len(msgFromWorker)
