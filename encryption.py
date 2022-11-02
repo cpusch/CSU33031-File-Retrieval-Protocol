@@ -33,10 +33,11 @@ def decrypt_data(data:bytes, key):
 def main():
     key = generate_key()
     public_key = get_public_key(key)
-    print(len(public_key))
-    encrypted_data = encrypt_data(b'secret secret',public_key)
+    # print(len(public_key))
+    encrypted_data = encrypt_data(b'secret secret ',public_key)
+    print(len(encrypted_data))
     decrypted_data = decrypt_data(encrypted_data, key)
-    print(decrypted_data)
+    print(len(decrypted_data))
 
 if __name__ == "__main__":
     main()
