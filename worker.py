@@ -1,8 +1,8 @@
 import socket
 import sys
-from constants import ACK_HEADER,REQ_HEADER,MOR_HEADER,LAS_HEADER
+from headers import *
 
-SPLIT_SIZE = 1000
+SPLIT_SIZE = 0
 localIP = sys.argv[1]
 localPort   = 60000
 bufferSize  = 1024
@@ -21,6 +21,12 @@ while(True):
     serverMessage = bytesAddressPair[0]
     serverAddress = bytesAddressPair[1]
 
+    HEADER = serverMessage[:3]
+    serverMessage = serverMessage[3:]
+    if HEADER == CFG_HEADER_1000:
+        SPLIT_SIZE = 1000
+    elif HEADER == CFG_HEADER_445:
+        SPLIT_SIZE = 445
     serverMsg = str(serverMessage.decode())
     print(f"Encoding {serverMsg} to bytes")
     with open(f'./files/{serverMsg}','rb') as file:

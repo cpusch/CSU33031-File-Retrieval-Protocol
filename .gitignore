@@ -5,4 +5,8 @@ test.txt
 part1.pcap
 test.pdf
 test.png
+.pyc
 __pycache__/constants.cpython-310.pyc
+__pycache__/encryption.cpython-310.pyc
+.vscode/settings.json
+__pycache__/headers.cpython-310.pyc
